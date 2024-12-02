@@ -1,0 +1,62 @@
+<div *ngFor="let tweet of timelineTweetsList;" class="w-full px-4 text-left">
+  <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 shadow-lg rounded-lg">
+    <div class="px-4 py-5 flex-auto">
+      <div class="flex">
+        <div
+          class="mr-4 text-white text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-twitter">
+          <img alt="" class="w-full rounded-full align-middle border-none shadow-lg"
+            src="{{getUserProfileDetails(tweet?.author_id)?.profile_image_url}}" />
+        </div>
+        <span class="text-lg font-semibold">{{getUserProfileDetails(tweet?.author_id)?.name}}
+          <h6 class="text-base text-blueGray-400 font-semibold mb-2">
+            @{{getUserProfileDetails(tweet?.author_id)?.username}}
+          </h6>
+        </span>
+      </div>
+      <ng-container *ngIf="tweet?.entities && checkJsonProperties(tweet?.entities, 'mentions')">
+        <div class="block pb-2">
+          <a href="javascript:void(0)" *ngFor="let mention of tweet?.entities?.mentions;"><span
+              class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-lightBlue-600 bg-white uppercase last:mr-0">
+              @{{mention.username}}
+            </span>
+          </a>
+        </div>
+      </ng-container>
+      <p class="mt-2 mb-2 text-blueGray-500" [innerHTML]="tweet?.text"></p>
+      <ng-container *ngIf="tweet?.entities && checkJsonProperties(tweet?.entities, 'hashtags')">
+        <div class="block pb-6">
+          <a href="javascript:void(0)" *ngFor="let hashtag of tweet?.entities?.hashtags;"><span
+              class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-lightBlue-600 bg-white uppercase last:mr-0 mr-2 mt-2">
+              #{{hashtag.tag}}
+            </span>
+          </a>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="tweet?.entities && checkJsonProperties(tweet?.entities, 'urls')">
+        <ng-container *ngIf="checkJsonProperties(tweet?.entities?.urls[0], 'images')">
+          <a href="{{tweet?.entities?.urls[0].expanded_url}}" target="_blank"><img
+              src="{{tweet?.entities?.urls[0].images[0].url}}" class="w-half align-middle rounded-lg mb-3" /></a>
+        </ng-container>
+
+        <ng-container *ngIf="checkJsonProperties(tweet?.entities?.urls[0], 'media_key')">
+          <a href="{{tweet?.entities?.urls[0].expanded_url}}" target="_blank">
+            <ng-container *ngIf="getMediaDetails(tweet?.entities?.urls[0].media_key).type == 'photo';else video">
+              <img src="{{getMediaDetails(tweet?.entities?.urls[0].media_key).url}}"
+                class="w-half align-middle rounded-lg mb-3" />
+            </ng-container>
+            <ng-template #video>
+              <img src="{{getMediaDetails(tweet?.entities?.urls[0].media_key).preview_image_url}}"
+                class="w-half align-middle rounded-lg mb-3" />
+            </ng-template>
+          </a>
+        </ng-container>
+        <h6 class="text-xs font-semibold mb-2">{{ tweet?.created_at | date: 'h:mm a, M/d/yy' }}</h6>
+        <a href="{{tweet?.entities?.urls[0].expanded_url}}" target="_blank"
+          class="pt-4 font-bold text-blueGray-700 hover:text-blueGray-500 ease-linear transition-all duration-150">
+          View All
+          <i class="fa fa-angle-double-right ml-1 leading-relaxed"></i>
+        </a>
+      </ng-container>
+    </div>
+  </div>
+</div>
